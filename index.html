@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+
+<script>
+
+    function getVVVValue() {
+        var caller = getVVVValue.caller;
+        var id = caller.$id;
+        if (id) {
+            if (!this.slaves[id])
+                this.slaves[id] = caller;
+        }
+//        console.log(getVVVValue.caller, this.value);
+        return this.value;
+    }
+
+
+    function setValue(value) {
+        this.beforeUpdate && this.beforeUpdate(this);
+        this.value = value;
+        for (var i in this.slaves) {
+            this.slaves[i].update();
+        }
+        this.afterUpdate && this.afterUpdate(this);
+    }
+
+    function update() {
+        this.beforeUpdate && this.beforeUpdate(this);
+        this.value = this();
+        for (var i in this.slaves) {
+            this.slaves[i].update();
+        }
+        this.afterUpdate && this.afterUpdate(this);
+    }
+
+    function Atomic(valueFn) {
+        if (valueFn.constructor !== Function) {
+            var val = valueFn;
+            valueFn = function() {
+                return val;
+            };
+        }
+        //valueFn.deps = deps;
+        Atomic.counter++;
+
+        for (var i = 1; i < arguments.length; i++) {
+            arguments[i].slaves[valueFn.$id] = valueFn;
+        }
+
+        valueFn.$id = Atomic.counter;
+        valueFn.slaves = {};
+        valueFn.value = valueFn();
+//    valueFn.toString = getVVVValue;
+        valueFn.valueOf = getVVVValue;
+        valueFn.setValue = setValue;
+        valueFn.update = update;
+        return valueFn;
+    }
+    Atomic.counter = 0;
+
+</script>
+
+<script src="123.js"></script>
+
+<!--<script>-->
+
+<!--function setNonEnumerableProps(obj) {-->
+<!--Object.defineProperties(obj, {-->
+<!--value: {-->
+<!--writable: true,-->
+<!--enumerable: false,-->
+<!--configurable: false-->
+<!--},-->
+<!--fn: {-->
+<!--writable: false,-->
+<!--enumerable: false,-->
+<!--configurable: false-->
+<!--},-->
+<!--deps: {-->
+<!--writable: true,-->
+<!--enumerable: false,-->
+<!--configurable: false-->
+<!--},-->
+<!--constructor: {-->
+<!--writable: false,-->
+<!--enumerable: false,-->
+<!--configurable: false-->
+<!--}-->
+<!--});-->
+<!--}-->
+
+<!--function Atom(fn) {-->
+<!--/*this.value = fn();-->
+<!--this.fn = fn;-->
+<!--this.deps = [];-->
+<!--this.constructor = {name: this.value + ''};-->
+<!--for (var i = 1; i < arguments.length; i++) {-->
+<!--var arg = arguments[i];-->
+<!--arg.deps.push(this);-->
+<!--}-->
+<!--*/-->
+
+<!--var o = {fn: fn/*, constructor: this.constructor, __proto__: Atom.prototype*/};-->
+<!--//        setNonEnumerableProps(o);-->
+<!--return o;-->
+<!--}-->
+<!--Atom.prototype.set = function setValue(value) {-->
+<!--this.value = value;-->
+<!--this.constructor.name = value + '';-->
+<!--for (var i = 0; i < this.deps.length; i++) {-->
+<!--this.deps[i].set(this.deps[i].fn());-->
+<!--/*-->
+<!--this.deps[i].value = this.deps[i].fn();-->
+<!--this.deps[i].constructor.name = this.deps[i].value + '';-->
+<!--*/-->
+<!--}-->
+<!--return value;-->
+<!--};-->
+
+<!--Atom.prototype.valueOf = function valueOf() {-->
+<!--return this.value;-->
+<!--};-->
+
+<!--Atom.prototype.toString = function toString() {-->
+<!--return this.value;-->
+<!--};-->
+
+
+<!--/*-->
+<!--console.time('perf2');-->
+
+<!--var a = [0];-->
+
+<!--for (var i = 1; i < 1000000; i++) {-->
+<!--a[i] = a[i - 1] + 1;-->
+<!--}-->
+<!--console.timeEnd('perf2');-->
+
+<!--console.time('perf');-->
+<!--var a = [ Atom(function () {-->
+<!--return 0;-->
+<!--})];-->
+<!--for (var i = 1; i < 1000000; i++) {-->
+
+<!--a[i] = Atom(function abc() {-->
+<!--return 1;-->
+<!--}, a[i] - 1);-->
+<!--}-->
+<!--console.timeEnd('perf');-->
+<!--*/-->
+
+
+<!--</script>-->
+</body>
+</html>
