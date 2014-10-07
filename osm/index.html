@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript" src="../../buildings.dt"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script type="text/javascript">
+    /*    var nodes = {};
+     var k = 100000;
+     for (var i = 0; i < osm.osm.node.length; i++) {
+     var node = osm.osm.node[i];
+     nodes[node["-id"]] = [(+node["-lon"] - 30.300) * k, (+node["-lat"] - 59.986) * k];
+     }
+
+
+     var buildings = [];
+     for (var i = 0; i < osm.osm.way.length; i++) {
+     var way = osm.osm.way[i];
+     var height = -1;
+     if (way.tag)
+     for (var j = 0; j < way.tag.length; j++) {
+     var tag = way.tag[j];
+     if (tag["-k"] == "building:levels") {
+     height = +tag["-v"];
+     break;
+     }
+     }
+     if (height > -1) {
+     var building = {height: height, nodes: []};
+     for (var j = 0; j < way.nd.length; j++) {
+     var nd = way.nd[j];
+     building.nodes.push(nodes[nd["-ref"]]);
+     }
+     buildings.push(building);
+     }
+     }*/
+    console.log(buildings);
+
+
+    var width = 5000;
+    var height = 2000;
+    var canvas = document.getElementById("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.width = width / 2 + "px";
+    canvas.style.height = height / 2 + "px";
+
+    var ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, width, height);
+
+
+    var k = .1;
+    var xmov = -5000;
+    var ymov = 0;
+
+    for (var i = 0; i < buildings.length; i++) {
+        var building = buildings[i];
+        var v = building.height * 25;
+        ctx.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')';
+
+
+        ctx.beginPath();
+        var firstNode = building.nodes[0];
+        ctx.moveTo((firstNode[0] - xmov) * k, (height - firstNode[1] - ymov) * k);
+        for (var j = 0; j < building.nodes.length; j++) {
+            var node = building.nodes[j];
+            ctx.lineTo((node[0] - xmov) * k, (height - node[1] - ymov) * k);
+        }
+        ctx.closePath();
+        ctx.fill();
+    }
+
+
+</script>
+
+</body>
+</html>
