@@ -27,7 +27,7 @@ class Atomic<T> {
     private static prevLastCalled:Atomic<any> = null;
     private static lastCalled:Atomic<any> = null;
 
-    get get():T {
+    get():T {
         var ff = Atomic.lastCalled;
         if (ff) {
             if (!this.slaves) {
@@ -45,7 +45,7 @@ class Atomic<T> {
         return this.value;
     }
 
-    set set(val:T) {
+    set(val:T) {
         this.value = val;
         this.update(false);
     }
@@ -84,6 +84,24 @@ class Atomic<T> {
             }
         }
 
+    }
+
+    static createGetters(obj) {
+        var keys = Object.keys(obj);
+        var properties:any = {};
+
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (key[0] === '$') {
+                properties[key.substring(1)] = {
+                    get: Atomic.prototype.get.bind(obj[key]),
+                    set: Atomic.prototype.set.bind(obj[key]),
+                    enumerable: true,
+                    configurable: true
+                }
+            }
+        }
+        Object.defineProperties(obj, properties);
     }
 
 }
@@ -187,6 +205,9 @@ class AList<T> {
 }
 
 function render(node, tree, nodeBefore = null) {
+    if (!tree) {
+        return;
+    }
     if (tree.length && tree.constructor !== String) {
         for (var j = 0; j < tree.length; j++) {
             render(node, tree[j]);
@@ -203,13 +224,14 @@ function render(node, tree, nodeBefore = null) {
             for (var i = 0; i < array.length; i++) {
                 var item = array[i];
                 list[i] = tree.fn(item, i);
-                render(node, list[i], tree.domNode);
+                render(node, [list[i], i < array.length - 1 ? tree.$split : ''], tree.domNode);
             }
             array.addListener(function (event, item) {
                 if (event === 'added') {
                     var val = array.get(item);
                     var dm = tree.fn(val, item);
-                    render(node, [tree.$split, dm], item < list.length - 1 ? list[item + 1].domNode : tree.domNode);
+
+                    render(node, [list.length > 0 ? tree.$split : '', dm], item < list.length - 1 ? list[item + 1].domNode : tree.domNode);
                     list.splice(item, 0, dm.domNode);
                     console.log(event, item, val);
                 }
@@ -235,9 +257,9 @@ function text(text) {
     var domNode;
     if (text.constructor === Function) {
         var atom = new Atomic<string>(text);
-        domNode = document.createTextNode(atom.get || '');
+        domNode = document.createTextNode(atom.get() || '');
         atom.addListener(function () {
-            domNode.textContent = atom.get || '';
+            domNode.textContent = atom.get() || '';
         });
     }
     else {
@@ -279,7 +301,7 @@ function $a(tagExpr:string, attrs?:{[key: string]: string}, ...children:any[]) {
 }
 
 function map(array:AList<any>, fn:(item:any, n:number)=>any, split?) {
-    var mapNode = document.createComment('Yaaho!');
+    var mapNode = document.createTextNode('');
     var list = [];
     for (var i = 0; i < array.length; i++) {
         var node = array[i];

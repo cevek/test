@@ -24,96 +24,131 @@ class $W {
 }
 
 class UserComment {
-    author = new AString;
-    authorFullName = new AString;
-    created = new ANumber;
-    deleted = new ANumber;
-    updated = new ANumber;
-    id = new AString;
-    text = new AString;
+    author:string;
+    $author = new AString;
+    authorFullName:string;
+    $authorFullName = new AString;
+    created:number;
+    $created = new ANumber;
+    deleted:number;
+    $deleted = new ANumber;
+    updated:number;
+    $updated = new ANumber;
+    id:string;
+    $id = new AString;
+    text:string;
+    $text = new AString;
 
     constructor(obj:any = {}) {
-        this.author.set = obj.author;
-        this.authorFullName.set = obj.authorFullName;
-        this.created.set = obj.created;
-        this.deleted.set = obj.deleted;
-        this.updated.set = obj.updated;
-        this.id.set = obj.id;
-        this.text.set = obj.text;
+        Atomic.createGetters(this);
+        this.author = obj.author;
+        this.authorFullName = obj.authorFullName;
+        this.created = obj.created;
+        this.deleted = obj.deleted;
+        this.updated = obj.updated;
+        this.id = obj.id;
+        this.text = obj.text;
     }
 }
 
 class IssueLink {
-    url = new AString;
-    value = new AString;
+    url:string;
+    $url = new AString;
+    value:string;
+    $value = new AString;
 
     constructor(obj:any = {}) {
-        this.url.set = 'http://youtrack.jetbrains.com/issue/' + obj.value;
-        this.value.set = obj.value;
+        Atomic.createGetters(this);
+        this.url = 'http://youtrack.jetbrains.com/issue/' + obj.value;
+        this.value = obj.value;
     }
 }
 
 class IssueAttachment {
-    url = new AString;
-    value = new AString;
+    url:string;
+    $url = new AString;
+    value:string;
+    $value = new AString;
 
     constructor(obj:any = {}) {
-        this.url.set = obj.url;
-        this.value.set = obj.value;
+        this.url = obj.url;
+        this.value = obj.value;
     }
 }
 class Issue {
-    id = new ANumber;
-    projectShortName = new AString;
-    numberInProject = new AString;
-    summary = new AString;
-    description = new AString;
-    created = new ANumber;
-    updated = new ANumber;
-    updaterName = new AString;
-    updaterFullName = new AString;
-    reporterName = new AString;
-    reporterFullName = new AString;
-    priority = new AString;
-    type = new AString;
-    state = new AString;
-    assignee = new AString;
-    subsystem = new AString;
-    fixVersions = new AString;
-    affectedVersion = new AString;
-    severity = new AString;
+    id:number;
+    $id = new ANumber;
+    projectShortName:string;
+    $projectShortName = new AString;
+    numberInProject:string;
+    $numberInProject = new AString;
+    summary:string;
+    $summary = new AString;
+    description:string;
+    $description = new AString;
+    created:number;
+    $created = new ANumber;
+    updated:number;
+    $updated = new ANumber;
+    updaterName:string;
+    $updaterName = new AString;
+    updaterFullName:string;
+    $updaterFullName = new AString;
+    reporterName:string;
+    $reporterName = new AString;
+    reporterFullName:string;
+    $reporterFullName = new AString;
+    priority:string;
+    $priority = new AString;
+    type:string;
+    $type = new AString;
+    state:string;
+    $state = new AString;
+    assignee:string;
+    $assignee = new AString;
+    subsystem:string;
+    $subsystem = new AString;
+    fixVersions:string;
+    $fixVersions = new AString;
+    affectedVersion:string;
+    $affectedVersion = new AString;
+    severity:string;
+    $severity = new AString;
 
-    votes = new ANumber;
-    commentsCount = new ANumber;
+    votes:number;
+    $votes = new ANumber;
+    commentsCount:number;
+    $commentsCount = new ANumber;
+
     comments = new AList<UserComment>();
     links = new AList<IssueLink>();
     attachments = new AList<IssueAttachment>();
 
     constructor(obj:any = {}) {
+        Atomic.createGetters(this);
         var fields = obj.fields;
-        Object.freeze(this);
-        this.id.set = obj.id;
-        this.summary.set = fields.summary;
-        this.description.set = fields.description || '';
-        this.created.set = fields.created;
-        this.projectShortName.set = fields.projectShortName;
-        this.numberInProject.set = fields.numberInProject;
-        this.updated.set = fields.updated;
-        this.updaterName.set = fields.updaterName;
-        this.updaterFullName.set = fields.updaterFullName;
-        this.reporterName.set = fields.reporterName;
-        this.reporterFullName.set = fields.reporterFullName;
-        this.votes.set = fields.votes;
-        this.commentsCount.set = fields.commentsCount;
+        this.id = obj.id;
+        this.summary = fields.summary;
+        this.description = fields.description || '';
+        this.created = fields.created;
+        this.projectShortName = fields.projectShortName;
+        this.numberInProject = fields.numberInProject;
+        this.updated = fields.updated;
+        this.updaterName = fields.updaterName;
+        this.updaterFullName = fields.updaterFullName;
+        this.reporterName = fields.reporterName;
+        this.reporterFullName = fields.reporterFullName;
+        this.votes = fields.votes;
+        this.commentsCount = fields.commentsCount;
 
-        this.priority.set = fields.Priority[0];
-        this.state.set = fields.State[0];
-        this.type.set = fields.Type[0];
-        this.assignee.set = fields.Assignee && fields.Assignee[0].fullName;
-        this.subsystem.set = fields.Subsystem[0];
-        this.fixVersions.set = fields['Fix versions'] && fields['Fix versions'][0];
-        this.affectedVersion.set = fields['Affected versions'] && fields['Affected versions'][0];
-        this.severity.set = fields.Severity;
+        this.priority = fields.Priority[0];
+        this.state = fields.State[0];
+        this.type = fields.Type[0];
+        this.assignee = fields.Assignee && fields.Assignee[0].fullName;
+        this.subsystem = fields.Subsystem[0];
+        this.fixVersions = fields['Fix versions'] && fields['Fix versions'][0];
+        this.affectedVersion = fields['Affected versions'] && fields['Affected versions'][0];
+        this.severity = fields.Severity;
 
         for (var i = 0; i < obj.comment.length; i++) {
             this.comments.add(new UserComment(obj.comment[i]));
@@ -192,87 +227,88 @@ function wrapText(text, len) {
 }
 
 function doLayout() {
-
+    document.getElementById('test').innerHTML = '';
     console.profile('perf');
     console.time('perf');
     render(document.getElementById('test'),
         $a('div', null,
-            $w.issues.map((issue)=>
+            map($w.issues, (issue)=>
                     $a('div.issue', null,
                         $a('div.line', null,
                             $a('span.field', null, 'ID:'),
-                            $a('span', null, ()=>issue.id.get)
+                            $a('span', null, ()=>issue.id)
                         ),
                         $a('div.line', null,
                             $a('span.field', null, 'Summary:'),
-                            $a('span', null, ()=>issue.summary.get)
+                            $a('span', null, ()=>issue.summary)
                         ),
                         $a('div.line', null,
                             $a('span.field', null, 'Description:'),
-                            $a('span', null, ()=>wrapText(issue.description.get, 100))
+                            $a('span', null, ()=>wrapText(issue.description, 100))
                         ),
 
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Reporter:"),
-                            $a("span.value", null, ()=>issue.reporterFullName.get)
+                            $a("span.value", null, ()=>issue.reporterFullName)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Updater:"),
-                            $a("span.value", null, ()=>issue.updaterFullName.get)
+                            $a("span.value", null, ()=>issue.updaterFullName)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Priority:"),
-                            $a("span.value", null, ()=>issue.priority.get)
+                            $a("span.value", null, ()=>issue.priority)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Type:"),
-                            $a("span.value", null, ()=>issue.type.get)
+                            $a("span.value", null, ()=>issue.type)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "State:"),
-                            $a("span.value", null, ()=>issue.state.get)
+                            $a("span.value", null, ()=>issue.state)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Assignee:"),
-                            $a("span.value", null, ()=>issue.assignee.get)
+                            $a("span.value", null, ()=>issue.assignee)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Subsystem:"),
-                            $a("span.value", null, ()=>issue.subsystem.get)
+                            $a("span.value", null, ()=>issue.subsystem)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Fix versions:"),
-                            $a("span.value", null, ()=>issue.fixVersions.get)
+                            $a("span.value", null, ()=>issue.fixVersions)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Affected versions:"),
-                            $a("span.value", null, ()=>issue.affectedVersion.get)
+                            $a("span.value", null, ()=>issue.affectedVersion)
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Severity:"),
-                            $a("span.value", null, ()=>issue.severity.get)
+                            $a("span.value", null, ()=>issue.severity)
                         ),
 
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Links:"),
                             $a("span.value", null,
                                 map(issue.links, (link)=>
-                                    $a("a", {target: "_blank", href: link.url.get}, ()=>link.value.get), ', ')
+                                    $a("a", {target: "_blank", href: link.url}, ()=>link.value), ', ')
                             )
                         ),
-                        $a("div", null,
+                        $a("div.line", null,
                             $a("span.field", null, "Attachments:"),
-                            $a("span.value", null, issue.attachments.map((attach) =>
-                                    $a("a", {target: "_blank", href: attach.url.get}, ()=>attach.value.get), ', ')
+                            $a("span.value", null,
+                                map(issue.attachments, (attach) =>
+                                    $a("a", {target: "_blank", href: attach.url}, ()=>attach.value), ', ')
                             )
                         ),
 
                         $a("div.comments", null,
                             $a("div.title", null, "Comments"),
-                            issue.comments.map((comment) =>
+                            map(issue.comments, (comment) =>
                                     $a("div.comment", null,
-                                        $a("div.author", null, ()=>comment.authorFullName.get),
-                                        $a("div.text", null, ()=>comment.text.get)
+                                        $a("div.author", null, ()=>comment.authorFullName),
+                                        $a("div.text", null, ()=>comment.text)
                                     )
                             )
                         )
@@ -283,10 +319,9 @@ function doLayout() {
 
     console.timeEnd('perf');
     console.profileEnd('perf');
-
-    console.log($w);
-
 }
+
+//doLayout();
 
 interface Console {
     profileEnd(name:string);
