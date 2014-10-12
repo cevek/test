@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    function observe(obj, keys) {
+//        console.log(obj, keys);
+
+    }
+/*
+    var ppp = [];
+    for (var i = 0; i < 1000000; i++) {
+        ppp[i] = {i: i};
+    }
+*/
+    console.time('perf');
+    for (var i = 0; i < 1000000; i++) {
+        Object.observe({}, observe);
+    }
+
+    console.timeEnd('perf');
+
+</script>
+
+</body>
+</html>

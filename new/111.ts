@@ -1,0 +1,6 @@
+module T {
+    function span() {
+
+    }
+}
+

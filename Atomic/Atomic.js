@@ -19,7 +19,6 @@ function getValue() {
 		ff.deps[this.$id] = this;
 	}
 
-//        console.log(getValue.caller, this.value);
 	return this.value;
 }
 
