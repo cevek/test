@@ -178,6 +178,12 @@ class Issue {
 declare var data:any[];
 
 var $w = new $W();
+var first = data[0];
+first.fields.links = [{value: '12312312'}];
+
+
+//$w.issues.add(new Issue(first));
+
 for (var i = 0; i < data.length; i++) {
     $w.issues.add(new Issue(data[i]));
 }
@@ -249,7 +255,7 @@ render(document.getElementById('test'),
                     $a("div", null,
                         $a("span.field", null, "Links:"),
                         $a("span.value", null,
-                            issue.links.map((link)=>
+                            map(issue.links, (link)=>
                                 $a("a", {target: "_blank", href: link.url.get}, ()=>link.value.get), ', ')
                         )
                     ),

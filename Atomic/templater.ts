@@ -153,7 +153,7 @@ class AList<T> {
     slice() {
     }
 
-    map(fn:(val:T, item:number)=>any, split:any) {
+    map(fn:(val:T, item:number)=>any, split?:any) {
         var newArray = [];
         for (var i = 0, len = this.length; i < len; i++) {
             newArray.push(fn(this[i], i));
@@ -186,14 +186,40 @@ class AList<T> {
 
 }
 
-function render(node, tree) {
+function render(node, tree, nodeBefore = null) {
     if (tree.length && tree.constructor !== String) {
         for (var j = 0; j < tree.length; j++) {
             render(node, tree[j]);
         }
     }
-    else if (tree.domNode) {
+    else if (tree.$map) {
+
         node.appendChild(tree.domNode);
+
+        var array = tree.$map;
+        if (array) {
+
+            var list = tree.list;
+            for (var i = 0; i < array.length; i++) {
+                var item = array[i];
+                list[i] = tree.fn(item, i);
+                render(node, list[i], tree.domNode);
+            }
+            array.addListener(function (event, item) {
+                if (event === 'added') {
+                    var val = array.get(item);
+                    var dm = tree.fn(val, item);
+                    render(node, [tree.$split, dm], item < list.length - 1 ? list[item + 1].domNode : tree.domNode);
+                    list.splice(item, 0, dm.domNode);
+                    console.log(event, item, val);
+                }
+
+            });
+        }
+    }
+    else if (tree.domNode) {
+        node.insertBefore(tree.domNode, nodeBefore);
+        //node.appendChild(tree.domNode);
         if (tree.children) {
             for (var i = 0; i < tree.children.length; i++) {
                 render(tree.domNode, tree.children[i]);
@@ -250,6 +276,17 @@ function $a(tagExpr:string, attrs?:{[key: string]: string}, ...children:any[]) {
         }
     }
     return {domNode: domNode, attrs: attrs, children: children};
+}
+
+function map(array:AList<any>, fn:(item:any, n:number)=>any, split?) {
+    var mapNode = document.createComment('Yaaho!');
+    var list = [];
+    for (var i = 0; i < array.length; i++) {
+        var node = array[i];
+        list[i] = node.domNode;
+    }
+
+    return {domNode: mapNode, attrs: null, $map: array, $split: split, list: list, fn: fn, children: null};
 }
 
 
