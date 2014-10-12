@@ -181,7 +181,6 @@ var $w = new $W();
 var first = data[0];
 first.fields.links = [{value: '12312312'}];
 
-
 //$w.issues.add(new Issue(first));
 
 for (var i = 0; i < data.length; i++) {
@@ -192,97 +191,102 @@ function wrapText(text, len) {
     return text && text.length > len ? text.substr(0, len) + '...' : text;
 }
 
-console.profile('perf');
-console.time('perf');
-render(document.getElementById('test'),
-    $a('div', null,
-        $w.issues.map((issue)=>
-                $a('div.issue', null,
-                    $a('div.line', null,
-                        $a('span.field', null, 'ID:'),
-                        $a('span', null, ()=>issue.id.get)
-                    ),
-                    $a('div.line', null,
-                        $a('span.field', null, 'Summary:'),
-                        $a('span', null, ()=>issue.summary.get)
-                    ),
-                    $a('div.line', null,
-                        $a('span.field', null, 'Description:'),
-                        $a('span', null, ()=>wrapText(issue.description.get, 100))
-                    ),
+function doLayout() {
 
-                    $a("div", null,
-                        $a("span.field", null, "Reporter:"),
-                        $a("span.value", null, ()=>issue.reporterFullName.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Updater:"),
-                        $a("span.value", null, ()=>issue.updaterFullName.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Priority:"),
-                        $a("span.value", null, ()=>issue.priority.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Type:"),
-                        $a("span.value", null, ()=>issue.type.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "State:"),
-                        $a("span.value", null, ()=>issue.state.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Assignee:"),
-                        $a("span.value", null, ()=>issue.assignee.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Subsystem:"),
-                        $a("span.value", null, ()=>issue.subsystem.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Fix versions:"),
-                        $a("span.value", null, ()=>issue.fixVersions.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Affected versions:"),
-                        $a("span.value", null, ()=>issue.affectedVersion.get)
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Severity:"),
-                        $a("span.value", null, ()=>issue.severity.get)
-                    ),
+    console.profile('perf');
+    console.time('perf');
+    render(document.getElementById('test'),
+        $a('div', null,
+            $w.issues.map((issue)=>
+                    $a('div.issue', null,
+                        $a('div.line', null,
+                            $a('span.field', null, 'ID:'),
+                            $a('span', null, ()=>issue.id.get)
+                        ),
+                        $a('div.line', null,
+                            $a('span.field', null, 'Summary:'),
+                            $a('span', null, ()=>issue.summary.get)
+                        ),
+                        $a('div.line', null,
+                            $a('span.field', null, 'Description:'),
+                            $a('span', null, ()=>wrapText(issue.description.get, 100))
+                        ),
 
-                    $a("div", null,
-                        $a("span.field", null, "Links:"),
-                        $a("span.value", null,
-                            map(issue.links, (link)=>
-                                $a("a", {target: "_blank", href: link.url.get}, ()=>link.value.get), ', ')
-                        )
-                    ),
-                    $a("div", null,
-                        $a("span.field", null, "Attachments:"),
-                        $a("span.value", null, issue.attachments.map((attach) =>
-                                $a("a", {target: "_blank", href: attach.url.get}, ()=>attach.value.get), ', ')
-                        )
-                    ),
+                        $a("div", null,
+                            $a("span.field", null, "Reporter:"),
+                            $a("span.value", null, ()=>issue.reporterFullName.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Updater:"),
+                            $a("span.value", null, ()=>issue.updaterFullName.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Priority:"),
+                            $a("span.value", null, ()=>issue.priority.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Type:"),
+                            $a("span.value", null, ()=>issue.type.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "State:"),
+                            $a("span.value", null, ()=>issue.state.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Assignee:"),
+                            $a("span.value", null, ()=>issue.assignee.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Subsystem:"),
+                            $a("span.value", null, ()=>issue.subsystem.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Fix versions:"),
+                            $a("span.value", null, ()=>issue.fixVersions.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Affected versions:"),
+                            $a("span.value", null, ()=>issue.affectedVersion.get)
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Severity:"),
+                            $a("span.value", null, ()=>issue.severity.get)
+                        ),
 
-                    $a("div.comments", null,
-                        $a("div.title", null, "Comments"),
-                        issue.comments.map((comment) =>
-                                $a("div.comment", null,
-                                    $a("div.author", null, ()=>comment.authorFullName.get),
-                                    $a("div.text", null, ()=>comment.text.get)
-                                )
+                        $a("div", null,
+                            $a("span.field", null, "Links:"),
+                            $a("span.value", null,
+                                map(issue.links, (link)=>
+                                    $a("a", {target: "_blank", href: link.url.get}, ()=>link.value.get), ', ')
+                            )
+                        ),
+                        $a("div", null,
+                            $a("span.field", null, "Attachments:"),
+                            $a("span.value", null, issue.attachments.map((attach) =>
+                                    $a("a", {target: "_blank", href: attach.url.get}, ()=>attach.value.get), ', ')
+                            )
+                        ),
+
+                        $a("div.comments", null,
+                            $a("div.title", null, "Comments"),
+                            issue.comments.map((comment) =>
+                                    $a("div.comment", null,
+                                        $a("div.author", null, ()=>comment.authorFullName.get),
+                                        $a("div.text", null, ()=>comment.text.get)
+                                    )
+                            )
                         )
                     )
-                )
+            )
         )
-    )
-);
-console.timeEnd('perf');
-console.profileEnd('perf');
+    );
 
-console.log($w);
+    console.timeEnd('perf');
+    console.profileEnd('perf');
+
+    console.log($w);
+
+}
 
 interface Console {
     profileEnd(name:string);
