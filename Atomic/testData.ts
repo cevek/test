@@ -317,6 +317,9 @@ function doLayout() {
         )
     );
 
+
+    console.log(insertBeforeCount);
+
     console.timeEnd('perf');
     console.profileEnd('perf');
 }
