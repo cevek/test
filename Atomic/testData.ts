@@ -228,7 +228,7 @@ function wrapText(text, len) {
 
 function doLayout() {
     document.getElementById('test').innerHTML = '';
-    console.profile('perf');
+    //console.profile('perf');
     console.time('perf');
     render(document.getElementById('test'),
         $a('div', null,
@@ -317,14 +317,43 @@ function doLayout() {
         )
     );
 
-
-    console.log(insertBeforeCount);
+    //console.log(insertBeforeCount);
 
     console.timeEnd('perf');
-    console.profileEnd('perf');
+    //console.profileEnd('perf');
 }
 
+//setInterval(doLayout, 1000);
+
 //doLayout();
+
+var getOwn = Object.getOwnPropertyNames;
+Object.getOwnPropertyNames = function (obj) {
+    //console.log(obj.join(","));
+    var props = getOwn(obj);
+    var newProps = [];
+    for (var i = 0; i < props.length; i++) {
+        if (props[i][0] === '$') {
+            continue;
+        }
+        //console.log(props[i]);
+
+        newProps.push(props[i]);
+    }
+
+    return newProps;
+};
+
+getOwnDescr = Object.getOwnPropertyDescriptor;
+Object.getOwnPropertyDescriptor = function (obj, prop) {
+    var d = getOwnDescr(obj, prop);
+    if (d.get) {
+        d.value = d.get();
+    }
+    delete d.get;
+    delete d.set;
+    return d;
+}
 
 interface Console {
     profileEnd(name:string);

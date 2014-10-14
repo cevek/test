@@ -3,8 +3,8 @@
 class Atomic<T> {
     private fn:()=>T;
 
-    private id:number;
-    private value:T;
+    id:number;
+    value:T;
 
     constructor(val?:any) {
         this.id = ++Atomic.counter;
@@ -106,7 +106,7 @@ class Atomic<T> {
                 }
 
             }
-            if (obj[key] instanceof AList) {
+            if (obj[key].constructor === AList) {
                 properties[key] = {
                     enumerable: true,
                     configurable: false,
@@ -217,27 +217,29 @@ class AList<T> {
 
 }
 
-
 function renderMap(node, tree) {
+    tree.domNode = document.createTextNode('');
     node.appendChild(tree.domNode);
 
     var array = tree.$map;
     if (array) {
 
-        var list = tree.list;
+        tree.children = [];
         for (var i = 0; i < array.length; i++) {
-            var item = array[i];
-            list[i] = tree.fn(item, i);
-            render(node, [list[i], i < array.length - 1 ? tree.$split : ''], tree.domNode);
+            tree.children[i] = tree.fn(array[i], i);
 
+            render(node, tree.children[i], tree.domNode);
+            if (tree.$split && i > 0) {
+                node.insertBefore(document.createTextNode(tree.$split), tree.children[i].domNode);
+            }
+            //render(node, [tree.children[i], i < array.length - 1 ? tree.$split : ''], tree.domNode);
         }
         array.addListener(function (event, item) {
             if (event === 'added') {
                 var val = array.get(item);
-                var dm = tree.fn(val, item);
+                tree.children[item] = tree.fn(val, item);
 
-                render(node, [list.length > 0 ? tree.$split : '', dm], item < list.length - 1 ? list[item + 1].domNode : tree.domNode);
-                list.splice(item, 0, dm.domNode);
+                render(node, [tree.children.length > 0 ? tree.$split : '', tree.children[item]], item < tree.children.length - 1 ? tree.children[item + 1].domNode : tree.domNode);
                 console.log(event, item, val);
             }
 
@@ -245,52 +247,66 @@ function renderMap(node, tree) {
     }
 }
 
-var insertBeforeCount = 0;
-function render(node, tree, nodeBefore = null) {
-    if (!tree) {
-        return;
-    }
-    if (tree.length && tree.constructor !== String) {
-        for (var j = 0; j < tree.length; j++) {
+function walkArray(node, tree) {
+    for (var j = 0; j < tree.length; j++) {
+        if (tree[j]) {
             render(node, tree[j]);
         }
     }
-    else if (tree.$map) {
-        renderMap(node, tree);
+}
 
-    }
-    else if (tree.domNode) {
-        insertBeforeCount++;
-        node.insertBefore(tree.domNode, nodeBefore);
-        if (tree.children) {
-            if (tree.children.length == 1) {
-                var textNode = tree.children[0];
-
-                if (textNode.constructor === Function) {
-                    var atom = new Atomic<string>(textNode);
-                    tree.domNode.textContent = atom.get() || '';
-                    atom.addListener(function () {
-                        tree.domNode.textContent = atom.get() || '';
-                    });
-                    return;
-                }
-                if (!textNode.domNode){
-                    tree.domNode.textContent = textNode || '';
-                    return ;
-                }
-            }
-
-            for (var i = 0; i < tree.children.length; i++) {
-                render(tree.domNode, tree.children[i]);
-            }
+function renderTag(node, tree, nodeBefore) {
+    tree.domNode = document.createElement(tree.tag);
+    if (tree.attrs) {
+        for (var key in tree.attrs) {
+            tree.domNode[key] = tree.attrs[key];
         }
     }
-    else {
-        render(node, text(tree));
+
+    node.insertBefore(tree.domNode, nodeBefore);
+
+    var childrenLen = tree.children.length;
+    if (childrenLen == 1) {
+        var textNode = tree.children[0];
+
+        if (textNode.constructor === Function) {
+            var atom = new Atomic<string>(textNode);
+            tree.domNode.textContent = atom.value || '';
+            atom.addListener(function () {
+                tree.domNode.textContent = atom.value || '';
+            });
+            return;
+        }
+
+        if (!textNode.tag) {
+            tree.domNode.textContent = textNode || '';
+            return;
+        }
+    }
+
+    for (var i = 0; i < childrenLen; i++) {
+        render(tree.domNode, tree.children[i]);
     }
 }
 
-function text(text) {
+function render(node, tree, nodeBefore = null) {
+    if (tree.constructor === Array) {
+        walkArray(node, tree);
+        return;
+    }
+    if (tree.$map) {
+        renderMap(node, tree);
+        return;
+    }
+    if (tree.tag) {
+        renderTag(node, tree, nodeBefore);
+        return;
+    }
+
+    text(node, tree, nodeBefore);
+}
+
+function text(node, text, nodeBefore) {
     var domNode;
     if (text.constructor === Function) {
         var atom = new Atomic<string>(text);
@@ -302,7 +318,7 @@ function text(text) {
     else {
         domNode = document.createTextNode(text || '');
     }
-    return {domNode: domNode};
+    node.insertBefore(domNode, nodeBefore);
 }
 
 function prepareTag(tagExpr, obj) {
@@ -329,28 +345,13 @@ function prepareTag(tagExpr, obj) {
 }
 
 function $a(tagExpr:string, attrs?:{[key: string]: string}, ...children:any[]) {
-    var obj = {tag: '', domNode: null, attrs: attrs, children: children}
+    var obj = {tag: '', domNode: null, attrs: attrs, children: children};
     prepareTag(tagExpr, obj);
-
-    obj.domNode = document.createElement(obj.tag);
-
-    if (obj.attrs) {
-        for (var key in obj.attrs) {
-            obj.domNode[key] = obj.attrs[key];
-        }
-    }
     return obj;
 }
 
-function map(array:AList<any>, fn:(item:any, n:number)=>any, split?) {
-    var mapNode = document.createTextNode('');
-    var list = [];
-    for (var i = 0; i < array.length; i++) {
-        var node = array[i];
-        list[i] = node.domNode;
-    }
-
-    return {domNode: mapNode, attrs: null, $map: array, $split: split, list: list, fn: fn, children: null};
+function map(array:AList<any>, fn:(item:any, n:number)=>any, split = false) {
+    return {tag: 'map', attrs: null, $map: array, $split: split, fn: fn, children: null};
 }
 
 
