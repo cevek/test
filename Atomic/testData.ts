@@ -226,17 +226,71 @@ function wrapText(text, len) {
     return text && text.length > len ? text.substr(0, len) + '...' : text;
 }
 
-function doLayout() {
+/*
+ class AADFASF  {
+ componentDidMount(){
+
+ }
+ destroy(){
+
+ }
+ constructor(){
+ this.template();
+ }
+ }
+ */
+
+
+class PanelView {
+    template: any;
+    issues = [];
+    constructor(){
+        this.template = doLayout(this);
+    }
+
+    itemTemplate(issue){
+        if (issue.id == 1)
+
+        return this.itemTemplate;
+    }
+
+}
+
+
+function abc() {
+    return $a('div.hello', null, 'ABC');
+}
+
+
+function doLayout(vm) {
+    document.getElementById('test').innerHTML = '';
+    console.profile('perf');
+    console.time('perf');
+    render(document.getElementById('test'),
+        $a('div', null,
+            //document.createElement('div'),
+            map(vm.issues, (issue) => vm.itemTemplate(issue))
+        )
+    );
+
+
+    console.log(insertBeforeCount);
+
+    console.timeEnd('perf');
+    console.profileEnd('perf');
+}
+function doLayout(vm) {
     document.getElementById('test').innerHTML = '';
     //console.profile('perf');
     console.time('perf');
     render(document.getElementById('test'),
         $a('div', null,
+            //document.createElement('div'),
             map($w.issues, (issue)=>
                     $a('div.issue', null,
                         $a('div.line', null,
                             $a('span.field', null, 'ID:'),
-                            $a('span', null, ()=>issue.id)
+                            $a('span', null, ()=>issue.id + ' / ' + issue.summary)
                         ),
                         $a('div.line', null,
                             $a('span.field', null, 'Summary:'),
