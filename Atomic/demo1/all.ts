@@ -1,0 +1,11 @@
+/// <reference path="Argentum.ts"/>
+/// <reference path="main.ts"/>
+/// <reference path="Component.ts"/>
+/// <reference path="Task.ts"/>
+/// <reference path="List.ts"/>
+/// <reference path="TaskListView.ts"/>
+/// <reference path="TaskItemView.ts"/>
+/// <reference path="TaskFullView.ts"/>
+/// <reference path="User.ts"/>
+/// <reference path="File.ts"/>
+/// <reference path="Comment.ts"/>
