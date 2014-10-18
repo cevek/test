@@ -381,6 +381,9 @@ function doLayout(vm) {
 
 //doLayout();
 
+
+/*
+
 var getOwn = Object.getOwnPropertyNames;
 Object.getOwnPropertyNames = function (obj) {
     //console.log(obj.join(","));
@@ -398,7 +401,7 @@ Object.getOwnPropertyNames = function (obj) {
     return newProps;
 };
 
-getOwnDescr = Object.getOwnPropertyDescriptor;
+var getOwnDescr = Object.getOwnPropertyDescriptor;
 Object.getOwnPropertyDescriptor = function (obj, prop) {
     var d = getOwnDescr(obj, prop);
     if (d.get) {
@@ -408,6 +411,7 @@ Object.getOwnPropertyDescriptor = function (obj, prop) {
     delete d.set;
     return d;
 }
+*/
 
 interface Console {
     profileEnd(name:string);
