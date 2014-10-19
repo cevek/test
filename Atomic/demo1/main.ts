@@ -1,6 +1,6 @@
 /// <reference path="all.ts"/>
 module wrike {
-    ag.render(document.body, new List());
+    Arg.render(document.body, new List());
 }
 
 

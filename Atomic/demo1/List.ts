@@ -8,12 +8,21 @@ module wrike {
         constructor(attrs?:IAttrs) {
             super(attrs);
             for (var i = 0; i < 1000; i++) {
-                this.tasks.push(new Task({id: i, summary: "Task #" + i, description: "Description " + i}));
+
+                var task = new Task({id: i, summary: "Task #" + i, description: "Description " + i});
+                for (var j = 0; j < 10; j++) {
+                    task.subtasks.push(new Task({
+                        id: 10000 + i + j,
+                        summary: "Task #" + 10000 * i + j,
+                        description: "Description " + 10000 * i + j
+                    }));
+                }
+                this.tasks.push(task);
             }
         }
 
         template() {
-            return ag.$('div.list', null,
+            return Arg.dom('div.list', null,
                 new TaskList(null, this.tasks, this.activeTask),
                 new TaskFull(null, this.activeTask));
         }

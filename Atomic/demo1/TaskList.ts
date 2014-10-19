@@ -5,7 +5,7 @@ module wrike {
         private reUseItemsCount = 20;
         private allDur = 0;
         private allDurLen = 0;
-        allHeight = new ag.Atomic<number>(0);
+        allHeight = new Arg.Atomic(0);
 
         constructor(attrs:IAttrs, private tasks:Task[], private activeTask?:ATask) {
             super(attrs);
@@ -64,12 +64,10 @@ module wrike {
 
         }
 
-
-
         template() {
-            return ag.$('div.tasklist', {onscroll: this.onScroll.bind(this)},
-                ag.$('div.wrapper', {style: {height: ()=>this.allHeight.get()}},
-                    ag.map<ATask>(this.visibleTaskAtoms, taskAtom=>
+            return Arg.dom('div.tasklist', {onscroll: this.onScroll.bind(this)},
+                Arg.dom('div.wrapper', {style: {height: ()=>this.allHeight.get()}},
+                    Arg.map<ATask>(this.visibleTaskAtoms, taskAtom=>
                         new TaskItem(null, taskAtom, this.activeTask))))
         }
     }

@@ -11,20 +11,23 @@ module wrike {
 
         template() {
 
-            return ag.$('div.full-task', null, [
-                ag.$('div.id', null, 'ID: ', ()=>this.task.get().id),
-                ag.$('div.summary', null, 'Summary: ', ()=>this.task.get().summary),
-                ag.$('div.description', null, 'Description: ', ()=>this.task.get().description),
-                ag.$('label', null,
-                    ag.$('input', {
+            return Arg.dom('div.full-task', null, [
+                Arg.dom('div.id', null, 'ID: ', ()=>this.task.get().id),
+                Arg.dom('div.summary', null, 'Summary: ', ()=>this.task.get().summary),
+                Arg.dom('div.description', null, 'Description: ', ()=>this.task.get().description),
+                Arg.dom('label', null,
+                    Arg.dom('input', {
                         type: "checkbox",
-                        checked: new ag.Atomic(()=> this.task.get().completed.get()),
+                        checked: new Arg.Atomic(v=>this.task.get().completed.get()),
                         onclick: this.setComplete.bind(this)
                     }),
-                    ()=> this.task.get().completed.get() ? 'Completed' : 'Complete'
-                )
+                    v=>this.task.get().completed.get() ? 'Completed' : 'Complete'
+                ),
+                Arg.map(new Arg.Atomic(v=>this.task.get().subtasks), subtask=>
+                    new TaskItem(null, new ATask(subtask), this.task))
             ])
         }
 
     }
 }
+

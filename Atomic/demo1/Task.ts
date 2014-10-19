@@ -1,6 +1,6 @@
 /// <reference path="all.ts"/>
 module wrike {
-    export class ATask extends ag.Atomic<Task> {}
+    export class ATask extends Arg.Atomic<Task> {}
     export class Task {
         id:number;
         summary:string;
@@ -11,7 +11,7 @@ module wrike {
         height = 30;
         top = 0;
 
-        completed = new ag.Atomic<boolean>(false);
+        completed = new Arg.Atomic(false);
 
         constructor(obj:any = {}) {
             this.id = obj.id;
@@ -21,4 +21,5 @@ module wrike {
     }
 
 }
+
 

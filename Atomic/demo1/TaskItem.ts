@@ -11,7 +11,7 @@ module wrike {
         }
 
         template() {
-            return ag.$('div.task', {
+            return Arg.dom('div.task', {
                     onclick: this.clickTask.bind(this),
                     classSet: {
                         active: ()=>this.activeTask.get() === this.task.get(),
@@ -22,19 +22,19 @@ module wrike {
                         top: ()=>this.task.get().top
                     }
                 },
-                //ag.$('div.id', null, ()=>this.task.get().id),
-                ag.$('div.summary', null, ()=>this.task.get().summary)
-                //ag.$('div.description', null, ()=>this.task.get().description),
+                //Arg.$('div.id', null, ()=>this.task.get().id),
+                Arg.dom('div.summary', null, ()=>this.task.get().summary)
+                //Arg.$('div.description', null, ()=>this.task.get().description),
                 /*
-                 ag.$('div.subtasks', null,
-                 ag.map<Task>(this.task.get().subtasks, task=>
-                 new TaskItemView(null, new ag.Atomic<Task>(task)))),
+                 Arg.$('div.subtasks', null,
+                 Arg.map<Task>(this.task.get().subtasks, task=>
+                 new TaskItemView(null, new Arg.Atomic<Task>(task)))),
                  */
 
                 /*
-                 ag.$('div.comments', null,
-                 ag.map<Comment>(this.task.get().comments, comment=>
-                 ag.$('div.comment', null, comment.author)))
+                 Arg.$('div.comments', null,
+                 Arg.map<Comment>(this.task.get().comments, comment=>
+                 Arg.$('div.comment', null, comment.author)))
                  */
             );
         }

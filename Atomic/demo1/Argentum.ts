@@ -1,4 +1,4 @@
-module ag {
+module Arg {
 
     export class Atomic<T> {
         private fn:()=>T;
@@ -81,15 +81,17 @@ module ag {
 
         private update(calcThisVal) {
             if (calcThisVal) {
+                //console.log("update", this.id, this.deps);
+
                 //Todo: iter my deps and remove their slave with me, clear deps
-                /*                if (this.deps) {
-                 for (var id in this.deps) {
-                 if (this.deps[id].slaves) {
-                 this.deps[id].slaves[this.id] = null;
-                 }
-                 }
-                 this.deps = null;
-                 }*/
+                if (this.deps) {
+                    for (var id in this.deps) {
+                        if (this.deps[id].slaves) {
+                            this.deps[id].slaves[this.id] = null;
+                        }
+                    }
+                    this.deps = null;
+                }
                 var temp = Atomic.prevLastCalled;
                 Atomic.prevLastCalled = Atomic.lastCalled;
                 Atomic.lastCalled = this;
@@ -98,8 +100,12 @@ module ag {
                 Atomic.prevLastCalled = temp;
             }
 
-            for (var i in this.slaves) {
-                this.slaves[i].update(true);
+            if (this.slaves) {
+                for (var i in this.slaves) {
+                    if (this.slaves[i]) {
+                        this.slaves[i].update(true);
+                    }
+                }
             }
 
             if (this.listeners) {
@@ -234,34 +240,59 @@ module ag {
 
     }
 
+    function renderMapHelper(node, tree, array) {
+        console.log("Render map helper", node);
+
+        if (tree.domNode) {
+            while (tree.domNode.firstChild) {
+                tree.domNode.removeChild(tree.domNode.firstChild);
+            }
+        }
+        //tree.domNode = document.createDocumentFragment();
+        //tree.domNode.appendChild(document.createTextNode('fuck'));
+
+        tree.children = [];
+        for (var i = 0; i < array.length; i++) {
+            tree.children[i] = tree.fn(array[i], i);
+            render(tree.domNode, tree.children[i]);
+            /*
+             if (tree.$split && i > 0) {
+             node.insertBefore(document.createTextNode(tree.$split), tree.children[i].domNode);
+             }
+             */
+            //render(node, [tree.children[i], i < array.length - 1 ? tree.$split : ''], tree.domNode);
+        }
+        /*array.addListener && array.addListener(function (event, item) {
+         if (event === 'added') {
+         var val = array.get(item);
+         tree.children[item] = tree.fn(val, item);
+
+         render(node, [tree.children.length > 0 ? tree.$split : '', tree.children[item]], item < tree.children.length - 1 ? tree.children[item + 1].domNode : tree.domNode);
+         console.log(event, item, val);
+         }
+
+         });*/
+    }
+
     function renderMap(node, tree) {
-        tree.domNode = document.createTextNode('');
-        node.appendChild(tree.domNode);
+        console.log("renderMap");
+
+        tree.domNode = document.createElement('iterator');
 
         var array = tree.$map;
-        if (array) {
-
-            tree.children = [];
-            for (var i = 0; i < array.length; i++) {
-                tree.children[i] = tree.fn(array[i], i);
-
-                render(node, tree.children[i], tree.domNode);
-                if (tree.$split && i > 0) {
-                    node.insertBefore(document.createTextNode(tree.$split), tree.children[i].domNode);
-                }
-                //render(node, [tree.children[i], i < array.length - 1 ? tree.$split : ''], tree.domNode);
-            }
-            array.addListener && array.addListener(function (event, item) {
-                if (event === 'added') {
-                    var val = array.get(item);
-                    tree.children[item] = tree.fn(val, item);
-
-                    render(node, [tree.children.length > 0 ? tree.$split : '', tree.children[item]], item < tree.children.length - 1 ? tree.children[item + 1].domNode : tree.domNode);
-                    console.log(event, item, val);
-                }
-
+        if (array.constructor === Function) {
+            tree.$map = array = new Atomic(array);
+        }
+        if (array.constructor === Atomic) {
+            renderMapHelper(node, tree, array.get());
+            array.addListener(function () {
+                renderMapHelper(node, tree, array.get());
             });
         }
+        else {
+            renderMapHelper(node, tree, array);
+        }
+        node.appendChild(tree.domNode);
     }
 
     function walkArray(node, tree) {
@@ -442,13 +473,13 @@ module ag {
         }
     }
 
-    export function $(tagExpr:string, attrs?:{[key: string]: any}, ...children:any[]) {
+    export function dom(tagExpr:string, attrs?:{[key: string]: any}, ...children:any[]) {
         var obj = {tag: '', domNode: null, attrs: attrs, children: children};
         prepareTag(tagExpr, obj);
         return obj;
     }
 
-    export function map<R>(array:Array<R>, fn:(item:R, n:number)=>any, split = '') {
+    export function map<R>(array:any, fn:(item:R, n:number)=>any, split = '') {
         return {tag: 'map', attrs: null, $map: array, $split: split, fn: fn, children: null};
     }
 }
